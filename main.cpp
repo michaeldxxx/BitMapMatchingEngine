@@ -189,6 +189,132 @@ struct BookPrinter
 class PositionTracker
 {
     public:
+        // static void add_pl(int side, int ls, size_t size, int spread) // for seller takes spread
+        // {
+        //     // ls == 1 = order is long
+        //     //           (side+ls - 2) (2*ls - 1)
+        //     //BUY    0 --> (0+1 - 2)(2*1 - 1) = -1
+        //     //SELL   1 --> (1+0 - 2)(2*0 - 1) = 1
+        //     //BID    2 --> (2+1 - 2)(2*1 - 1) = 1
+        //     //OFFER  3 --> (3+0 - 2)(2*0 - 1) = -1
+
+
+        //     // 2 - 
+        //     //BUY    0 --> 2 - 0|1 = 1
+        //     //SELL   1 --> 2 - 1|1 = 1
+        //     //BID    2 --> 2 - 2|1 = 0
+
+
+
+        //     positions[0] += (side+ls - 2)*(2*ls - 1) * size * spread;
+        // }
+        static void add_pl(size_t size, int spread)
+        {
+            positions[0] += size * spread;
+        }
+        static void add_position(int side, size_t size, size_t price)
+        {
+            positions[side+1] += (side < 2) * size * price;
+            
+        }
+        static void remove_position(int side, size_t size, size_t price)
+        {
+            positions[side+1] -= size * price;
+        }
+};
+
+
+
+class OrdersArenaAllocator
+{
+    public:
+    // ~10ns per allocation, and goes around arena to reallocate filled order slots
+        static size_t new_pos()
+        {
+// for first run-through do simple incr: extra cost every call after first runthrough if anticipate overflow
+// if (next_block++ < NUM_BLOCKS)
+//     return next_block * SLOTS_PER_BLOCK;
+            const auto st_slot = next_block_slot_idx;
+            do
+            {
+                auto vec = _mm256_loadu_ps(reinterpret_cast<float const*>(&ArenaSlots[next_block_slot_idx]));
+                cmp_mask = _mm256_cmpeq_epi8(_mm256_castps_si256(vec), null_mask);
+                auto mask = _mm256_movemask_epi8(cmp_mask);
+                if (mask)
+                    return __builtin_ffs(mask) + next_block_slot_idx; 
+                next_block_slot_idx += SLOTS_PER_BLOCK;
+            } while (next_block_slot_idx < NUM_SLOTS);
+            next_block_slot_idx = 0;
+            while (next_block_slot_idx < st_slot)
+            {
+                auto vec = _mm256_loadu_ps(reinterpret_cast<float const*>(&ArenaSlots[next_block_slot_idx]));
+                cmp_mask = _mm256_cmpeq_epi8(_mm256_castps_si256(vec), null_mask);
+                auto mask = _mm256_movemask_epi8(cmp_mask);
+                if (mask)
+                    return __builtin_ffs(mask) + next_block_slot_idx; 
+                next_block_slot_idx += SLOTS_PER_BLOCK;
+            }
+            return 0;
+        }
+};
+
+
+// ~10ns for < <--64--> > search, ~75ns for full 10000pt search; on average should be clustered 
+// template <unsigned long N>
+class BiLayerBitmapSeeker
+{
+    static constexpr auto max_ull = std::numeric_limits<unsigned long long>::max();
+    public:
+        template <unsigned long N>
+        static size_t find_next(i64bitmap_t<N>& bitmap, i8bitmap_t<N>& upper, size_t st_bit)
+        {
+            auto st = st_bit / 64;
+            auto rpos = __builtin_ffsll(bitmap[st + 31] & (max_ull << st_bit + 1 - st * 64));
+            if (rpos)
+                return rpos + st * 64;
+            for (auto i = st + 31 + 1; i < N - 31; i += 32)
+            {
+                auto vec = _mm256_loadu_ps(reinterpret_cast<float const*>(&upper[i]));
+                cmp_mask = _mm256_cmpgt_epi8(_mm256_castps_si256(vec), null_mask);
+                auto mask = _mm256_movepi8_mask(cmp_mask);
+                if (mask)
+                {
+                    auto idx = __builtin_ffs(mask) + i - 1;
+                    return __builtin_ffsll(bitmap[idx]) + (idx - 31) * 64;
+                }
+            }
+            return 0;
+        }
+
+        template <unsigned long N>
+        static size_t find_prev(i64bitmap_t<N>& bitmap, i8bitmap_t<N>& upper, size_t st_bit)
+        {
+            auto st = st_bit / 64;
+            auto offset = st * 64 + 64;
+            auto lzs = __builtin_clzll(bitmap[st + 31] & (max_ull >> offset - st_bit));
+            if (lzs - 64)
+                return offset - lzs; 
+            for (int i = st - 1; i > -1; i -= 32)  // st + 31 - 32
+            {
+                auto vec = _mm256_loadu_ps(reinterpret_cast<float const*>(&upper[i]));
+                cmp_mask = _mm256_cmpgt_epi8(_mm256_castps_si256(vec), null_mask);
+                auto mask = _mm256_movepi8_mask(cmp_mask);
+                if (mask)
+                {
+                    auto idx = i + 32 - 1 - __builtin_clz(mask);
+                    return (idx - 31) * 64 + 64 - __builtin_clzll(bitmap[idx]);
+                }
+            }
+            return 0;
+        }
+};
+
+// template <unsigned long N>
+class BookBuilder
+{
+    private:
+        using side_book_t = book_t::side_book_t;
+
         void fill(side_book_t& book, input_order_t& order, size_t MINMAX, int ls) const
         {
             auto& prices = book.prices;
