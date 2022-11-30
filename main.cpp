@@ -449,39 +449,39 @@ BENCHMARK(BM_insert_orders);
  
 BENCHMARK_MAIN();
 
-int main(int ac, char** av)
-{
-    auto builder = BookBuilder{};
-    auto gateway = Gateway{builder}; 
-    auto orders = std::vector<std::string>
-    {
-              "TINYCORP SELL 27 1",
-              "OTHER BID 5 20 OFFER 5 25",
-              "MEDPHARMA BID 3 120 OFFER 7 150",
-              "NEWFIRM BID 10 140 BID 7 150 OFFER 14 180",
-              "TINYCORP BID 25 3 OFFER 25 6",
-              "FASTAIR BID 21 65 OFFER 35 85",
-              "FLYCARS BID 50 80 OFFER 100 90",
-              "BIGBANK BID 200 13 OFFER 100 19",
-              "REDCHIP BID 55 25 OFFER 80 30",
-              "FASTAIR BUY 50 100",
-              "CHEMCO SELL 100 67",
-              "OTHER BUY 5 30",
-              "REDCHIP SELL 5 30",
-              "NEWFIRM BUY 2 200",
-              "MEDPHARMA BUY 2 150",
-              "BIGBANK SELL 50 11",
-              "FLYCARS BUY 200 100",
-              "CHEMCO BID 1000 77 OFFER 500 88"
-    };
-    auto builder = BookBuilder{};
-    auto gateway = Gateway{builder};
-    auto is = std::stringstream{};
-    auto n = orders.size();
-    for (auto i = 0; i < n; ++i)
-      is << orders[i] << '\n';
-    init();
-    gateway.process_stream(is);
+// int main(int ac, char** av)
+// {
+//     auto builder = BookBuilder{};
+//     auto gateway = Gateway{builder}; 
+//     auto orders = std::vector<std::string>
+//     {
+//               "TINYCORP SELL 27 1",
+//               "OTHER BID 5 20 OFFER 5 25",
+//               "MEDPHARMA BID 3 120 OFFER 7 150",
+//               "NEWFIRM BID 10 140 BID 7 150 OFFER 14 180",
+//               "TINYCORP BID 25 3 OFFER 25 6",
+//               "FASTAIR BID 21 65 OFFER 35 85",
+//               "FLYCARS BID 50 80 OFFER 100 90",
+//               "BIGBANK BID 200 13 OFFER 100 19",
+//               "REDCHIP BID 55 25 OFFER 80 30",
+//               "FASTAIR BUY 50 100",
+//               "CHEMCO SELL 100 67",
+//               "OTHER BUY 5 30",
+//               "REDCHIP SELL 5 30",
+//               "NEWFIRM BUY 2 200",
+//               "MEDPHARMA BUY 2 150",
+//               "BIGBANK SELL 50 11",
+//               "FLYCARS BUY 200 100",
+//               "CHEMCO BID 1000 77 OFFER 500 88"
+//     };
+//     auto builder = BookBuilder{};
+//     auto gateway = Gateway{builder};
+//     auto is = std::stringstream{};
+//     auto n = orders.size();
+//     for (auto i = 0; i < n; ++i)
+//       is << orders[i] << '\n';
+//     init();
+//     gateway.process_stream(is);
 
-    return 0;
-}
+//     return 0;
+// }
