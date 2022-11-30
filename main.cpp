@@ -7,7 +7,6 @@
 #include <immintrin.h>
 #include <numeric>
 #include <random>
-// #include <execution>
 
 
 constexpr size_t NUM_SLOTS = 524288;  // power of 2 
