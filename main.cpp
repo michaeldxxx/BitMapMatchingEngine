@@ -414,7 +414,7 @@ static void BM_insert_orders(benchmark::State& state)
     auto orders = std::vector<std::string>
     {
                 "TINYCORP SELL 27 1",
-                "MAVEN BID 5 20 OFFER 5 25",
+                "OTHER BID 5 20 OFFER 5 25",
                 "MEDPHARMA BID 3 120 OFFER 7 150",
                 "NEWFIRM BID 10 140 BID 7 150 OFFER 14 180",
                 "TINYCORP BID 25 3 OFFER 25 6",
@@ -424,7 +424,7 @@ static void BM_insert_orders(benchmark::State& state)
                 "REDCHIP BID 55 25 OFFER 80 30",
                 "FASTAIR BUY 50 100",
                 "CHEMCO SELL 100 67",
-                "MAVEN BUY 5 30",
+                "OTHER BUY 5 30",
                 "REDCHIP SELL 5 30",
                 "NEWFIRM BUY 2 200",
                 "MEDPHARMA BUY 2 150",
@@ -456,7 +456,7 @@ int main(int ac, char** av)
     auto orders = std::vector<std::string>
     {
               "TINYCORP SELL 27 1",
-              "MAVEN BID 5 20 OFFER 5 25",
+              "OTHER BID 5 20 OFFER 5 25",
               "MEDPHARMA BID 3 120 OFFER 7 150",
               "NEWFIRM BID 10 140 BID 7 150 OFFER 14 180",
               "TINYCORP BID 25 3 OFFER 25 6",
@@ -466,7 +466,7 @@ int main(int ac, char** av)
               "REDCHIP BID 55 25 OFFER 80 30",
               "FASTAIR BUY 50 100",
               "CHEMCO SELL 100 67",
-              "MAVEN BUY 5 30",
+              "OTHER BUY 5 30",
               "REDCHIP SELL 5 30",
               "NEWFIRM BUY 2 200",
               "MEDPHARMA BUY 2 150",
