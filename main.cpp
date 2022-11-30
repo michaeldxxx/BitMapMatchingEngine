@@ -83,7 +83,6 @@ struct order_entry_t
     unsigned int size;
     order_side side; 
     size_t next_idx;
-    // order_entry_t() : next_idx{MAX_ORDERS + 2} {}
 // size = 16 (bec of alignment: 4 extra bytes if we want to put anything else in here) [multiple of 8 is good for traversal, 16 is very good]
 };
 
@@ -451,13 +450,12 @@ BENCHMARK(BM_insert_orders);
  
 BENCHMARK_MAIN();
 
- int main(int ac, char** av)
- {
-
-  auto builder = BookBuilder{};
-  auto gateway = Gateway{builder}; 
-  auto orders = std::vector<std::string>
-  {
+int main(int ac, char** av)
+{
+    auto builder = BookBuilder{};
+    auto gateway = Gateway{builder}; 
+    auto orders = std::vector<std::string>
+    {
               "TINYCORP SELL 27 1",
               "MAVEN BID 5 20 OFFER 5 25",
               "MEDPHARMA BID 3 120 OFFER 7 150",
@@ -476,15 +474,15 @@ BENCHMARK_MAIN();
               "BIGBANK SELL 50 11",
               "FLYCARS BUY 200 100",
               "CHEMCO BID 1000 77 OFFER 500 88"
-  };
-  auto builder = BookBuilder{};
-  auto gateway = Gateway{builder};
-  auto is = std::stringstream{};
-  auto n = orders.size();
-  for (auto i = 0; i < n; ++i)
+    };
+    auto builder = BookBuilder{};
+    auto gateway = Gateway{builder};
+    auto is = std::stringstream{};
+    auto n = orders.size();
+    for (auto i = 0; i < n; ++i)
       is << orders[i] << '\n';
-  init();
-  gateway.process_stream(is);
-  
-  return 0;
-  }
+    init();
+    gateway.process_stream(is);
+
+    return 0;
+}
