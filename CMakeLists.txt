@@ -12,6 +12,6 @@ set(benchmark_INC_DIR "../benchmark")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx -dM -march=native -fconcepts")
 
-add_executable(untitled main.cpp book.hpp)
+add_executable(untitled main.cpp)
 target_include_directories(untitled PRIVATE ${Boost_INCLUDE_DIR} ${benchmark_INC_DIR})
 target_link_libraries(untitled PRIVATE ${Boost_LIBRARIES} benchmark::benchmark ${GTEST_LIBRARIES})
