@@ -220,6 +220,7 @@ class OrdersArenaAllocator
 {
     public:
     // ~10ns per allocation, and goes around arena to reallocate filled order slots
+    // ^ for single runs, in precached runs, <1ns
         static size_t new_pos()
         {
 // for first run-through do simple incr: extra cost every call after first runthrough if anticipate overflow
@@ -251,6 +252,7 @@ class OrdersArenaAllocator
 
 
 // ~10ns for < <--64--> > search, ~75ns for full 10000pt search; on average should be clustered 
+// ^ for cold runs, in hot runs, <1ns;
 // template <unsigned long N>
 class BiLayerBitmapSeeker
 {
