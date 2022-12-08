@@ -197,15 +197,6 @@ class PositionTracker
         //     //SELL   1 --> (1+0 - 2)(2*0 - 1) = 1
         //     //BID    2 --> (2+1 - 2)(2*1 - 1) = 1
         //     //OFFER  3 --> (3+0 - 2)(2*0 - 1) = -1
-
-
-        //     // 2 - 
-        //     //BUY    0 --> 2 - 0|1 = 1
-        //     //SELL   1 --> 2 - 1|1 = 1
-        //     //BID    2 --> 2 - 2|1 = 0
-
-
-
         //     positions[0] += (side+ls - 2)*(2*ls - 1) * size * spread;
         // }
         static void add_pl(size_t size, int spread)
@@ -214,7 +205,7 @@ class PositionTracker
         }
         static void add_position(int side, size_t size, size_t price)
         {
-            positions[side+1] += (side < 2) * size * price;
+            positions[(side&1)+1] += (side < 2) * size * price;
             
         }
         static void remove_position(int side, size_t size, size_t price)
