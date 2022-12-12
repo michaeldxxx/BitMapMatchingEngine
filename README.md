@@ -2,4 +2,4 @@
 
 Uses preallocated on the stack order storage with local "wink-out" allocator and simd ultra fast (deterministic) bitmap linear search
 
-0.997 - 0.999 CPUs used
+0.997 - 0.999 CPUs used (perf stat)
